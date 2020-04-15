@@ -14,8 +14,8 @@ i18n.use(locale);
 
 ReactDOM.render(
   <React.StrictMode>
-    {console.log(imagesJson[1].url)}
-    <ShowImages imageUrls={imagesJson} />
+    {console.log(imagesJson.length)}
+    <ShowImages imageUrls={imagesJson} total={imagesJson.length} />
     {/* <Image url={imagesJson[1].url}/> */}
     {/* <App/> */}
   </React.StrictMode>,
