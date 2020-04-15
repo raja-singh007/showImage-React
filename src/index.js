@@ -12,9 +12,9 @@ import * as serviceWorker from './serviceWorker';
 ReactDOM.render(
   <React.StrictMode>
     {console.log(imagesJson[1].url)}
-    <ShowImages imageUrls={imagesJson} />
+    {/* <ShowImages imageUrls={imagesJson} /> */}
     {/* <Image url={imagesJson[1].url}/> */}
-    
+    <App/>
   </React.StrictMode>,
   document.getElementById('root')
 );
