@@ -4,10 +4,10 @@
   justify-content: space-evenly;
 }
 
-.Image{
-  margin: 25px 50px;
+.Image img{
+  margin: 25px;
   /* padding: 10 px; */
-  height: 50vmin;
+  height: 200px;
   width: auto;
 
 }

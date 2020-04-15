@@ -1,67 +1,49 @@
 import React from 'react'
-import {Pagination} from'element-react' 
 import './ShowImages.css'
-
-
-
 
 class ShowImages extends React.Component {
   constructor(props){
     super(props);
+    let urls = [{url: this.props.imageUrls[0].url}];
+    for(let i=1;i<this.props.pageSize;i++){
+      urls.push({url: ''})
+    }
     this.state={
-      index:0,
-      total: null,
-      pageSize: 10,
-      currentPage: 1
+      urls,
+      index: 0
     }
-    this.updatePageConf = this.updatePageConf.bind(this);
-    this.onCurrentChange = this.onCurrentChange.bind(this);
+    this.imageLoaded = this.imageLoaded.bind(this);
   }
-
-
-  renderImage(imageUrl) {
-    return (
-      <div >
-        <img className="Image" src={imageUrl.url} />
-      </div>
-    );
-    
-  }
-  onCurrentChange(current_page){
-    this.setState(state => ({
-
-    }))
-  }
-  updatePageConf(key,value){
-    let action;
-    if(key === 'pageNo')
-      action = this.props.updatePageNumber;
-    else{
-      if(value > this.props.page.pageSize && Math.ceil(this.props.total / value) < this.props.page.pageNo){
-        this.props.updatePageNumber(Math.ceil(this.props.total / value))
-      }
-      action = this.props.updatePageSize;
+  static getDerivedStateFromProps(props,state){
+    let urls = [{url: props.imageUrls[0].url}];
+    for(let i=1;i<props.pageSize;i++){
+      urls.push({url: ''})
     }
-    action(value);
+    return{
+      urls,
+      index: 0
+    }
   }
-  
-
+  imageLoaded(index){
+    if((index+1) < this.props.pageSize){
+      let url = this.props.imageUrls[index+1].url;
+      let urls = [...this.state.urls]
+      urls[index+1].url = url;
+      this.setState({
+        urls
+      })
+    }
+  }
   render() {
-    
-   let index = this.state.index; 
-   let urls = this.props.imageUrls;
-   let pageSize = this.state.per_page;
-   let currentPage = this.state.currentPage;
-   //page.pageNo-1)*page.pageSize, page.pageNo*page.pageSize
     return (
         <div className="container">
-          {urls.slice(index,index+pageSize).map(imageUrl => this.renderImage(imageUrl))}
-          <Pagination className="pagination" pageSize={pageSize} 
-          currentPage={currentPage} 
-          // onSizeChange={(size) => {this.props.updatePageConf('pageSize',size)}}
-          onCurrentChange={(currentPage)=> this.onCurrentChange()}
-          //(pageNo) => {this.props.updatePageConf('pageNo',pageNo)}
-          />
+          {this.state.urls.map((item,index) => {
+            return (
+              <div className="Image" key={index}>
+                <img src={item.url} alt={index} onLoad={() => this.imageLoaded(index)}></img>
+              </div>
+            )
+          })}
         </div>
         
          
