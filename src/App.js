@@ -20,6 +20,7 @@ class App extends React.Component{
     this.setState(state => {
       let tempState = Object.assign({},state);
       tempState.pageNo = pageNo;
+      return tempState;
     },() => {
       window.stop();
       document.execCommand("Stop", false);
