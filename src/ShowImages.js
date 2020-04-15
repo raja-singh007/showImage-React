@@ -14,7 +14,7 @@ class ShowImages extends React.Component {
       pageSize: 10,
       currentPage: 1
     }
-    this.updatePageConf = this.updatePageConf.bind(this);
+   // this.updatePageConf = this.updatePageConf.bind(this);
     this.onCurrentChange = this.onCurrentChange.bind(this);
   }
 
@@ -29,21 +29,22 @@ class ShowImages extends React.Component {
   }
   onCurrentChange(current_page){
     this.setState(state => ({
-
+        index: (current_page - 1) * state.pageSize ,
+        currentPage : current_page
     }))
   }
-  updatePageConf(key,value){
-    let action;
-    if(key === 'pageNo')
-      action = this.props.updatePageNumber;
-    else{
-      if(value > this.props.page.pageSize && Math.ceil(this.props.total / value) < this.props.page.pageNo){
-        this.props.updatePageNumber(Math.ceil(this.props.total / value))
-      }
-      action = this.props.updatePageSize;
-    }
-    action(value);
-  }
+  // updatePageConf(key,value){
+  //   let action;
+  //   if(key === 'pageNo')
+  //     action = this.props.updatePageNumber;
+  //   else{
+  //     if(value > this.props.page.pageSize && Math.ceil(this.props.total / value) < this.props.page.pageNo){
+  //       this.props.updatePageNumber(Math.ceil(this.props.total / value))
+  //     }
+  //     action = this.props.updatePageSize;
+  //   }
+  //   action(value);
+  // }
   
 
   render() {
@@ -59,7 +60,7 @@ class ShowImages extends React.Component {
           <Pagination className="pagination" pageSize={pageSize} 
           currentPage={currentPage} 
           // onSizeChange={(size) => {this.props.updatePageConf('pageSize',size)}}
-          onCurrentChange={(currentPage)=> this.onCurrentChange()}
+          onCurrentChange={(currentPage)=> this.onCurrentChange(currentPage)}
           //(pageNo) => {this.props.updatePageConf('pageNo',pageNo)}
           />
         </div>
