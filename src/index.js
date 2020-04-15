@@ -13,6 +13,7 @@ import {Provider} from 'react-redux'
 import thunkMiddleware from 'redux-thunk';
 import {createLogger} from 'redux-logger';
 
+
 import { i18n } from 'element-react'
 i18n.use(locale);
 

@@ -15,6 +15,7 @@ app.use(function (req, res, next) {
   next();
 });
 
+
 const InitModule = require('./InitModule');
 const initObject = new InitModule();
 
@@ -22,10 +23,12 @@ let dbObject;
 initObject.getMongoDB()
   .then(dbo => {
     dbObject = dbo;
+    console.log('MOngodb connected')
   })
   .catch(e => {
     console.log("Mongo Connection Failed", e);
   });
+
 
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '..','build', 'index.html'));
