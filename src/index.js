@@ -5,16 +5,19 @@ import App from './App';
 import imagesJson from './x101.json'
 import ShowImages from './ShowImages'
 import * as serviceWorker from './serviceWorker';
+import locale from 'element-react/src/locale/lang/en';
 
 
+import { i18n } from 'element-react'
+i18n.use(locale);
 
 
 ReactDOM.render(
   <React.StrictMode>
     {console.log(imagesJson[1].url)}
-    {/* <ShowImages imageUrls={imagesJson} /> */}
+    <ShowImages imageUrls={imagesJson} />
     {/* <Image url={imagesJson[1].url}/> */}
-    <App/>
+    {/* <App/> */}
   </React.StrictMode>,
   document.getElementById('root')
 );

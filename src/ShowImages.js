@@ -22,7 +22,9 @@ class ShowImages extends React.Component {
   renderImage(imageUrl) {
     return (
       <div >
-        <img className="Image" src={imageUrl.url} />
+        <img className="Image" 
+       // onLoad={this.handleImageLoaded.bind(this)}
+        src={imageUrl.url} />
       </div>
     );
     
@@ -51,11 +53,12 @@ class ShowImages extends React.Component {
     
    let index = this.state.index; 
    let urls = this.props.imageUrls;
-   let pageSize = this.state.per_page;
+   let pageSize = this.state.pageSize;
    let currentPage = this.state.currentPage;
    //page.pageNo-1)*page.pageSize, page.pageNo*page.pageSize
     return (
         <div className="container">
+          {console.log('index' + index + 'pageSize'+pageSize)}
           {urls.slice(index,index+pageSize).map(imageUrl => this.renderImage(imageUrl))}
           <Pagination className="pagination" pageSize={pageSize} 
           currentPage={currentPage} 
