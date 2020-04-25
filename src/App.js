@@ -5,6 +5,7 @@ import {Pagination, Loading} from'element-react'
 import {connect} from 'react-redux'
 import {getImages} from "./actions";
 import Img from 'react-image';
+import LazyImage from "./LazyImage";
 class App extends React.Component{
   constructor(props){
     super(props);
@@ -70,15 +71,17 @@ class App extends React.Component{
           {this.props.load ? <Loading></Loading> : this.props.images.map((item,index) => {
             return (
               <div className="Image" key={this.state.pageNo*this.state.pageSize + index}>
-                <Img src={item.url} alt={index} 
+                {/* <Img src={item.url} alt={index} 
                 // onLoad={() => this.imageLoaded(index)}
                 loader={<img src="images/loading-gif"/>}
                 unloader={<img src="images/sad-face.png"/>}
-                />
+                /> */}
+                <LazyImage
+                src={item.url} alt={index}
+                height={455} width={350}/>
               </div>
             )
           })}
-          
         </div>
       </div>
     )
