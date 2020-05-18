@@ -3,7 +3,7 @@ const path = require('path');
 const app = express();
 const bodyParser = require("body-parser");
 const router = express.Router();
-
+let ObjectId = require('mongodb').ObjectID
 app.use(bodyParser.urlencoded({
   extended: true
 }));
@@ -47,10 +47,44 @@ router.get('/getImages',async(req,res)=>{
         url: "https://storage.googleapis.com/liketoknowit/"+item.id
       }
     })})
-    }catch(err){
-        res.send({status:"FAIL",message:err.message})
+  }catch(err){
+      res.send({status:"FAIL",message:err.message})
+  }
+})
+
+router.get('/getImageLTK',async(req,res)=>{
+  try{
+    const image = await dbObject.collection('ltk_compressed').findOne({status:{$not:{$in:['save','delete','pending']}}});
+    let imageId = ObjectId(image._id);
+    await dbObject.collection('ltk_compressed').updateOne({_id: imageId},{$set:{status: 'pending'}})
+    let imageURL = `https://storage.googleapis.com${image.url.split('/').filter(item => item !== 'gs:').join('/')}`;
+    res.send({status:'PASS',url: imageURL,id: image._id})
+  }catch(err){
+    res.send({status:"FAIL",message:err.message})
+  }
+})
+
+router.post('/updateImageLTK',async(req,res)=>{
+  try{
+    let query = req.body;
+    let imageId = ObjectId(query.id),
+      status = query.status,
+      angles = query.angles;
+    const response = await dbObject.collection('ltk_compressed').updateOne({_id:imageId},{$set:{
+      status,
+      angles
+    }})
+    console.log(response.result)
+    if(response.result && response.result.nModified === 1){
+      res.send({status:'PASS'})
+    } else {
+      res.send({status:'FAIL',message: 'Image Not Found'})
     }
-  })
+  }catch(err){
+    res.send({status:"FAIL",message:err.message})
+  }
+})
+
 app.use('/', router);
 
 app.listen(3002);
