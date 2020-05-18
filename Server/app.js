@@ -54,7 +54,7 @@ router.get('/getImages',async(req,res)=>{
 
 router.get('/getImageLTK',async(req,res)=>{
   try{
-    const image = await dbObject.collection('ltk_compressed').findOne({status:{$not:{$in:['save','delete','pending']}}});
+    const image = await dbObject.collection('ltk_compressed').findOne({status:{$not:{$in:['save','delete','pending','doubtful']}}});
     let imageId = ObjectId(image._id);
     await dbObject.collection('ltk_compressed').updateOne({_id: imageId},{$set:{status: 'pending'}})
     let imageURL = `https://storage.googleapis.com${image.url.split('/').filter(item => item !== 'gs:').join('/')}`;
@@ -74,7 +74,6 @@ router.post('/updateImageLTK',async(req,res)=>{
       status,
       angles
     }})
-    console.log(response.result)
     if(response.result && response.result.nModified === 1){
       res.send({status:'PASS'})
     } else {
