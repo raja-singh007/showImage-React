@@ -54,7 +54,7 @@ router.get('/getImages',async(req,res)=>{
 
 router.get('/getImageLTK',async(req,res)=>{
   try{
-    const image = await dbObject.collection('ltk_compressed').findOne({status:{$not:{$in:['save','delete','pending','doubtful']}}});
+    const image = await dbObject.collection('ltk_compressed').findOne({status:{$not:{$in:['save','delete','pending','doubtful','do-later']}}});
     let imageId = ObjectId(image._id);
     await dbObject.collection('ltk_compressed').updateOne({_id: imageId},{$set:{status: 'pending'}})
     let imageURL = `https://storage.googleapis.com${image.url.split('/').filter(item => item !== 'gs:').join('/')}`;
@@ -67,10 +67,10 @@ router.get('/getImageLTK',async(req,res)=>{
 router.post('/updateImageLTK',async(req,res)=>{
   try{
     let query = req.body;
-    let imageId = ObjectId(query.id),
+    let url = `gs:/${query.url.split('/').filter(item => item !== 'storage.googleapis.com' && item !== 'https:').join('/')}`,
       status = query.status,
       angles = query.angles;
-    const response = await dbObject.collection('ltk_compressed').updateOne({_id:imageId},{$set:{
+    const response = await dbObject.collection('ltk_compressed').updateOne({url:url},{$set:{
       status,
       angles
     }})
