@@ -15,6 +15,10 @@ app.use(function (req, res, next) {
   next();
 });
 
+const Collection = {
+  COMP_BG: 'compressed_bg',
+  ORIGIN_BG: 'original_bg'
+}
 
 const InitModule = require('./InitModule');
 const initObject = new InitModule();
@@ -41,16 +45,17 @@ router.get('/getImages',async(req,res)=>{
     pageNo = params.pageNo,
     pageSize = params.pageSize
     console.log(params)
-    const images = await dbObject.collection('liketoknowit').find().project({_id:0,id:1}).skip((pageNo-1)*pageSize).limit(pageNo*pageSize).toArray();
+    const images = await dbObject.collection(Collection.COMP_BG).find().project({_id:0,url:1}).skip((pageNo-1)*pageSize).limit(pageNo*pageSize).toArray();
     res.send({status:'PASS',data: images.map(item => {
       return {
-        url: "https://storage.googleapis.com/liketoknowit/"+item.id
+        url: item.url
       }
     })})
   }catch(err){
       res.send({status:"FAIL",message:err.message})
   }
 })
+
 
 router.get('/getImageLTK',async(req,res)=>{
   try{
