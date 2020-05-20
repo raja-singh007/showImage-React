@@ -5,12 +5,12 @@ import './LazyImage.css'
 
 const LazyImage = ({ width, height, src, ...rest }) => {
 
-  const handleClick = (e) => {
-    console.log(src.replace('compressed','original-background'));
-   let url = src.replace('compressed','original-background')
-    // e.preventDefault();
-    window.open(url,"_blank");
-  }
+  // const handleClick = (e) => {
+  //   console.log(src.replace('compressed','original-background'));
+  //  let url = src.replace('compressed','original-background')
+  //   // e.preventDefault();
+  //   window.open(url,"_blank");
+  // }
   const [ref, inView] = useInView({
     triggerOnce: true,
     rootMargin: '200px 0px',
@@ -21,8 +21,8 @@ const LazyImage = ({ width, height, src, ...rest }) => {
     <div ref={ref} >
       {/* {console.log('***'+src)} */}
       {inView ? (
-        <div>
         <div className="container">
+          <a href= {src.replace('compressed','original-background')} target="_blank">
         <img className="Image"
           {...rest}
           src={src}
@@ -30,10 +30,7 @@ const LazyImage = ({ width, height, src, ...rest }) => {
           height={height}
           loading="lazy"
         />
-        </div>
-        <button className="button" onClick={handleClick}>
-        Original Image
-        </button>
+        </a>
         </div>
       ) : null}
     </div>
