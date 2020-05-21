@@ -74,7 +74,7 @@ router.post('/updateImageLTK',async(req,res)=>{
       status,
       angles
     }})
-    if(response.result && response.result.nModified === 1){
+    if(response.result && (response.result.ok === 1 || response.result.nModified === 1)){
       res.send({status:'PASS'})
     } else {
       res.send({status:'FAIL',message: 'Image Not Found'})
