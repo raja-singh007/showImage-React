@@ -15,7 +15,14 @@ export function loading(loading){
     loading
   }
 }
-export function getImages(pageNo, pageSize){
+export function setTotal(total){
+  return {
+    id: actionId++,
+    type: 'set_total',
+    total
+  }
+}
+export function getImages(pageNo, pageSize, imageSetValue){
   return async function(dispatch){
     dispatch(loading(true))
     let result = await axios({
@@ -23,13 +30,15 @@ export function getImages(pageNo, pageSize){
       url: config.BASEURL+"/getImages",
       params:{
         pageNo,
-        pageSize
+        pageSize,
+        imageSetValue
       }
     })
     console.log(result.data)
-    if(result.data.status === 'PASS')
+    if(result.data.status === 'PASS'){
       dispatch(setImages(result.data.data))
-
+      dispatch(setTotal(result.data.total))
+    }
     dispatch(loading(false))
   }
 }

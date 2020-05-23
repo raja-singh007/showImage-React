@@ -17,9 +17,14 @@ app.use(function (req, res, next) {
 
 const Collection = {
   COMP_BG: 'compressed_bg',
-  ORIGIN_BG: 'original_bg'
+  ORIGIN_BG: 'original_bg',
+  LTK: 'ltk_compressed'
 }
-
+const ImageSet = {
+  LTK_SAVED: 'ltk_saved',
+  LTK_DELETED: 'ltk_deleted',
+  BACKGROUND_CF: 'background_cf'
+}
 const InitModule = require('./InitModule');
 const initObject = new InitModule();
 
@@ -43,14 +48,37 @@ router.get('/getImages',async(req,res)=>{
   try{
     let params = req.query,
     pageNo = params.pageNo,
-    pageSize = params.pageSize
-    console.log(params)
-    const images = await dbObject.collection(Collection.COMP_BG).find().project({_id:0,url:1}).skip((pageNo-1)*pageSize).limit(pageNo*pageSize).toArray();
-    res.send({status:'PASS',data: images.map(item => {
-      return {
-        url: item.url
-      }
-    })})
+    pageSize = params.pageSize,
+    imageSetValue = params.imageSetValue
+    let collection = '',
+      query = {};
+    if(imageSetValue === ImageSet.LTK_SAVED){
+      collection = Collection.LTK;
+      query = {"status": "save"}
+    } else if(imageSetValue === ImageSet.LTK_DELETED){
+      collection = Collection.LTK;
+      query = {"status": "delete"}
+    } else if(imageSetValue === ImageSet.BACKGROUND_CF){
+      collection = Collection.COMP_BG;
+      query = {}
+    }
+    const total = await dbObject.collection(collection).find(query).count();
+    const images = await dbObject.collection(collection).find(query).project({_id:0,url:1}).skip((pageNo-1)*pageSize).limit(pageNo*pageSize).toArray();
+    res.send({
+      status:'PASS',
+      data: images.map(item => {
+        let url = '';
+        if(item.url.indexOf('gs://') >= 0){
+          url = `https://storage.googleapis.com${item.url.split('/').filter(item => item !== 'gs:').join('/')}`;
+        } else {
+          url = item.url
+        }
+        return {
+          url
+        }
+      }),
+      total
+    })
   }catch(err){
       res.send({status:"FAIL",message:err.message})
   }
@@ -59,9 +87,9 @@ router.get('/getImages',async(req,res)=>{
 
 router.get('/getImageLTK',async(req,res)=>{
   try{
-    const image = await dbObject.collection('ltk_compressed').findOne({status:{$not:{$in:['save','delete','pending','doubtful','do-later']}}});
+    const image = await dbObject.collection(Collection.LTK).findOne({status:{$not:{$in:['save','delete','pending','doubtful','do-later']}}});
     let imageId = ObjectId(image._id);
-    await dbObject.collection('ltk_compressed').updateOne({_id: imageId},{$set:{status: 'pending'}})
+    await dbObject.collection(Collection.LTK).updateOne({_id: imageId},{$set:{status: 'pending'}})
     let imageURL = `https://storage.googleapis.com${image.url.split('/').filter(item => item !== 'gs:').join('/')}`;
     res.send({status:'PASS',url: imageURL,id: image._id})
   }catch(err){
@@ -75,7 +103,7 @@ router.post('/updateImageLTK',async(req,res)=>{
     let url = `gs:/${query.url.split('/').filter(item => item !== 'storage.googleapis.com' && item !== 'https:').join('/')}`,
       status = query.status,
       angles = query.angles;
-    const response = await dbObject.collection('ltk_compressed').updateOne({url:url},{$set:{
+    const response = await dbObject.collection(Collection.LTK).updateOne({url:url},{$set:{
       status,
       angles
     }})
