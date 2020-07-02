@@ -18,7 +18,8 @@ app.use(function (req, res, next) {
 const Collection = {
   COMP_BG: 'compressed_bg',
   ORIGIN_BG: 'original_bg',
-  LTK: 'ltk_compressed'
+  LTK: 'ltk_compressed',
+  DressStreet : 'dressStreetStyle'
 }
 const ImageSet = {
   LTK_SAVED: 'ltk_saved',
@@ -42,6 +43,24 @@ initObject.getMongoDB()
 app.get('/', function(req, res) {
   res.sendFile(path.join(__dirname, '..','build', 'index.html'));
 });
+
+//api savetodb
+router.post('/saveData', async (req, res) => {
+  try {
+    let data = req.body;
+    url = data.url
+    resp = data.resp
+    await dbObject.collection(Collection.DressStreet).insertOne({url,resp})
+    console.log(resp)
+    res.send({status:'PASS'})
+  } catch (err) {
+    console.log(err)
+    res.send({
+      status: 'FAIL',
+      message: err
+    })
+  }
+})
 
 //api username 
 router.get('/getImages',async(req,res)=>{
